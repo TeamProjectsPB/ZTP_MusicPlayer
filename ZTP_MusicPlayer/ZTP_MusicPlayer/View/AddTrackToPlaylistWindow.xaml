@@ -1,0 +1,36 @@
+﻿<Window x:Class="ZTP_MusicPlayer.View.AddTrackToPlaylistWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+         xmlns:viewmodel="clr-namespace:ZTP_MusicPlayer.ViewModel"        
+        xmlns:local="clr-namespace:ZTP_MusicPlayer.View"
+        mc:Ignorable="d"
+         Title="Dodaj piosenkę do playlisty" Height="300" Width="300" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        xmlns:xc="clr-namespace:ExCastle.Wpf"
+        xc:DialogCloser.DialogResult="{Binding DialogResult}">
+    <Window.DataContext>
+        <viewmodel:AddTrackToPlaylistViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <ListView Name="PlaylistListView" Margin="3"
+                  ItemsSource="{Binding Playlists}"
+                  DisplayMemberPath="name"
+                  SelectedItem="{Binding SelectedPlaylist}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                    <EventSetter Event="MouseDoubleClick" x:Name="CurrentPlaylistItemDoubleClick" Handler="{Binding AddToPlaylist}"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+        <Button Grid.Row="1" Content="Zamknij" Name="CloseButton" Command="{Binding Cancel}"  Margin="3"
+                HorizontalContentAlignment="Center" HorizontalAlignment="Center"/>
+
+    </Grid>
+</Window>

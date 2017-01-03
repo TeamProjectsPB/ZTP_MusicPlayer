@@ -69,6 +69,11 @@
     <Compile Include="Converter\BindingProxy.cs" />
     <Compile Include="DialogCloser.cs" />
     <Compile Include="Model\ConfigFile.cs" />
+    <Compile Include="Model\Iterators\CurrentSongsCollection.cs" />
+    <Compile Include="Model\Iterators\IAbstractCollection.cs" />
+    <Compile Include="Model\Iterators\IAbstractIterator.cs" />
+    <Compile Include="Model\Iterators\Iterator.cs" />
+    <Compile Include="Model\Iterators\RandomIterator.cs" />
     <Compile Include="ViewModel\AddLibraryViewModel.cs" />
     <Compile Include="ViewModel\AddNewPlaylistViewModel.cs" />
     <Compile Include="ViewModel\AddTrackToPlaylistViewModel.cs" />

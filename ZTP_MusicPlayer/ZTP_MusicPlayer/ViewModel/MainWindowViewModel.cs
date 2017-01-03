@@ -99,9 +99,9 @@ namespace ZTP_MusicPlayer.ViewModel
 //            get { return player.PlaylistsToString; }
 //        }
 
-        public string CurrentSong
+        public string CurrentSongString
         {
-            get { return player.CurrentSong; }
+            get { return player.CurrentSongString; }
         }
 
         public ObservableCollection<Library> Libraries
@@ -138,7 +138,7 @@ namespace ZTP_MusicPlayer.ViewModel
             {
                 ConfigFile.CreateNewFile();
             }
-            CreateTitleToFilesWithoutMetaData();
+            //CreateTitleToFilesWithoutMetaData();
             timer = new DispatcherTimer();
             timer.Tick += TimerOnTick;
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -152,14 +152,10 @@ namespace ZTP_MusicPlayer.ViewModel
             OnPropertyChanged("DurationToString");
             OnPropertyChanged("Duration");
             OnPropertyChanged("CurrentPosition");
-            OnPropertyChanged("CurrentSong");
+            OnPropertyChanged("CurrentSongString");
         }
         #endregion
         #region Commands
-
-       
-
-
         #region PrivateMembers
 
         private ICommand _runLibraryWindowCommand;
@@ -169,9 +165,9 @@ namespace ZTP_MusicPlayer.ViewModel
         private ICommand addNewPlaylist;
         private ICommand play, stop, previous, next;
         private ICommand _repeatAllCommand, _randomPlayCommand;
+        private ICommand _sortCommand;
 
         #endregion
-
         #region Properties
 
         public ICommand RemoveLibraryCommand
@@ -252,10 +248,16 @@ namespace ZTP_MusicPlayer.ViewModel
             set { _repeatAllCommand = value; }
         }
 
-        public ICommand ShufflePlayCommand
+        public ICommand RandomPlayCommand
         {
             get { return _randomPlayCommand; }
             set { _randomPlayCommand = value; }
+        }
+
+        public ICommand SortCommand
+        {
+            get { return _sortCommand; }
+            set { _sortCommand = value; }
         }
 
         #endregion
@@ -277,7 +279,14 @@ namespace ZTP_MusicPlayer.ViewModel
             _repeatAllCommand = new RelayCommand(RepeatAllExecute);
             _randomPlayCommand = new RelayCommand(RandomPlayExecute);
             _runLibraryWindowCommand = new RelayCommand(RunLibraryWindowExecute, RunLibraryWindowCanExecute);
+            _sortCommand = new RelayCommand(SortExecute);
         }
+
+        private void SortExecute(object o)
+        {
+            player.Sort((string)o);
+        }
+
         private void RandomPlayExecute(object o)
         {
             RandomPlay = player.ChangeRandomPlayStatement();
@@ -285,7 +294,6 @@ namespace ZTP_MusicPlayer.ViewModel
 
         private void RepeatAllExecute(object o)
         {
-            //throw new NotImplementedException();
             RepeatAll = player.ChangeRepeatAllStatement();
         }
 
@@ -296,14 +304,12 @@ namespace ZTP_MusicPlayer.ViewModel
 
         private void PlayPlaylistExecute(object o)
         {
-            //throw new NotImplementedException();
             var name = ((IWMPPlaylist) o).name;
             player.LoadCurrentPlaylist(name);
         }
 
         private void PlayLibraryExecute(object o)
         {
-            //throw new NotImplementedException();
             var name = ((Library) o).Name;
             player.LoadCurrentLibrary(name);
         }
@@ -311,8 +317,9 @@ namespace ZTP_MusicPlayer.ViewModel
         private void PlaySongExecute(object o)
         {
             var track = o as Song;
-            var index = CurrentSongs.IndexOf(track);
-            player.LoadCurrentSong(index);
+//            var index = CurrentSongs.IndexOf(track);
+//            player.LoadCurrentSong(index);
+            player.LoadCurrentSong(track);
         }
 
 
@@ -382,18 +389,35 @@ namespace ZTP_MusicPlayer.ViewModel
 
         #region SongMetaData
 
-        private void CreateTitleToFilesWithoutMetaData()
-        {
-            foreach (Song song in CurrentSongs)
-            {
-                if (string.IsNullOrWhiteSpace(song.Tag.Title))
-                {
-                    var path = Path.GetFileNameWithoutExtension(song.Name);
-                    song.Tag.Title = path;
-                    song.Save();
-                }
-            }
-        }
+//        private void CreateTitleToFilesWithoutMetaData()
+//        {
+//            foreach (Song song in CurrentSongs)
+//            {
+//                bool songEdited = false;
+//                if (string.IsNullOrWhiteSpace(song.Tag.FirstPerformer))
+//                {
+//                    song.Tag.Performers = null;
+//                    song.Tag.Performers = new String[1] { string.Empty };
+//                    songEdited = true;
+//                }
+//                if (string.IsNullOrWhiteSpace(song.Tag.Title))
+//                {
+//                    var path = Path.GetFileNameWithoutExtension(song.Name);
+//                    song.Tag.Title = path;
+//                    songEdited = true;
+//                }
+//                
+//                if (string.IsNullOrWhiteSpace(song.Tag.Album))
+//                {
+//                    song.Tag.Album = string.Empty;
+//                    songEdited = true;
+//                }
+//                if (songEdited)
+//                {
+//                    song.Save();
+//                }
+//            }
+//        }
         #endregion
         #region Add
 
@@ -417,7 +441,7 @@ namespace ZTP_MusicPlayer.ViewModel
         public void CreateLibrary(string name, string url)
         {
             player.CreateLibrary(name, url);
-            CreateTitleToFilesWithoutMetaData();
+//            CreateTitleToFilesWithoutMetaData();
         }
 
 

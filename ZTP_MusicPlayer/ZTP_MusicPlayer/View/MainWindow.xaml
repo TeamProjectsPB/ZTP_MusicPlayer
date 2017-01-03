@@ -133,7 +133,7 @@
                       IsSynchronizedWithCurrentItem="True"
                       converter:GridViewSort.AutoSort="True"
                       converter:GridViewSort.ShowSortGlyph="True"
-                      ctrl:ListViewLayoutManager.Enabled="True"
+                      ctrl:ListViewLayoutManager.Enabled="True"                      
                       ItemsSource="{Binding CurrentSongs}">
 <!--                <ListView.InputBindings>-->
 <!--                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Source={StaticResource Proxy}, Path=Data.PlaySongCommand}" CommandParameter="{Binding ElementName=CurrentPlayingListView, Path=SelectedItem}"/>-->
@@ -146,9 +146,8 @@
 							    Value="16" />
                             </Style>
                         </GridView.ColumnHeaderContainerStyle>
-                        <GridViewColumn Header="Autor" 
-                                        converter:GridViewSort.PropertyName="Tag.FirstPerformer"
-                                        ctrl:ProportionalColumn.Width="1">
+                        <GridViewColumn ctrl:ProportionalColumn.Width="1">
+                            <GridViewColumnHeader Content="Autor" Command="{Binding SortCommand}" CommandParameter="Tag.FirstPerformer"/>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Tag.FirstPerformer}">
@@ -159,9 +158,8 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Tytuł" 
-                                        converter:GridViewSort.PropertyName="Tag.Title"
-                                        ctrl:ProportionalColumn.Width="2">
+                        <GridViewColumn ctrl:ProportionalColumn.Width="2">
+                            <GridViewColumnHeader Content="Tytuł" Command="{Binding SortCommand}" CommandParameter="Tag.Title"/>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Tag.Title}">
@@ -172,9 +170,8 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Album" 
-                                        converter:GridViewSort.PropertyName="Tag.Album"
-                                        ctrl:ProportionalColumn.Width="1">
+                        <GridViewColumn ctrl:ProportionalColumn.Width="1">
+                            <GridViewColumnHeader Content="Album" Command="{Binding SortCommand}" CommandParameter="Tag.Album"/>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Tag.Album}">
@@ -225,7 +222,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Grid.ColumnSpan="7" Grid.Row="0" Name="CurrentSongLabel"  Margin="3" HorizontalContentAlignment="Center" VerticalAlignment="Center" Content="{Binding Path=CurrentSong, UpdateSourceTrigger=PropertyChanged}" ></Label>
+                <Label Grid.Column="0" Grid.ColumnSpan="7" Grid.Row="0" Name="CurrentSongLabel"  Margin="3" HorizontalContentAlignment="Center" VerticalAlignment="Center" Content="{Binding Path=CurrentSongString, UpdateSourceTrigger=PropertyChanged}" ></Label>
                 <Label Grid.Column="0" Grid.Row="1" Name="PositionLabel"  Margin="3" VerticalAlignment="Center" HorizontalAlignment="Right" Content="{Binding Path=CurrentPositionToString, UpdateSourceTrigger=PropertyChanged}" ></Label>
                 <Slider Name="SeekBarSlider" Grid.Row="1" Grid.Column="1" Width="auto" Margin="4" Grid.ColumnSpan="5" VerticalAlignment="Center"
                         Minimum="0" IsMoveToPointEnabled="True"  
@@ -262,7 +259,7 @@
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
                     <Button Name="ShufflePlayButton"  Grid.Column="0" Margin="5" HorizontalAlignment="center" VerticalAlignment="Center" BorderThickness="0" Background="{Binding Path=ShuffleButtonBackground, UpdateSourceTrigger=PropertyChanged}"
-                            Command="{Binding ShufflePlayCommand}" >
+                            Command="{Binding RandomPlayCommand}" >
                         <Image Source="/IMG/shuffle.png" MaxHeight="25"/>
                     </Button>
                     <!--                    Click="ShufflePlayButton_OnClick"-->

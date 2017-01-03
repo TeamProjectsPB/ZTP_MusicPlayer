@@ -63,8 +63,7 @@ namespace ZTP_MusicPlayer.ViewModel
 
         private void OkExecute(object o)
         {
-            MediaPlayer.Instance.CreatePlaylist(playlistName);
-            ConfigFile.SaveNewPlaylist(playlistName);
+            MediaPlayer.Instance.CreatePlaylist(playlistName);            
             DialogResult = true;
         }
 

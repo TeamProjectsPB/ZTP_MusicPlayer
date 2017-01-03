@@ -7,7 +7,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using TagLib;
 using WMPLib;
+using ZTP_MusicPlayer.Model;
+using ZTP_MusicPlayer.Model.Iterators;
 using Song = TagLib.File;
 
 namespace ZTP_MusicPlayer.Model
@@ -41,10 +44,15 @@ namespace ZTP_MusicPlayer.Model
 
         private readonly string fileUrl = Directory.GetCurrentDirectory() + "\\config.dat";
         private WindowsMediaPlayer mPlayer;
+        private IWMPPlaylist _currentPlaylist;
         private List<string> currentPlaylistSongUrl;
         private IWMPPlaylist allLibrariesPlaylist;
         private string allLibrariesPlaylistName;
-        private ObservableCollection<Song> _currentSongs;
+        //private ObservableCollection<Song> CurrentSongs;
+        private CurrentSongsCollection currentSongsCollection;
+        private IAbstractIterator currentSongsIterator;
+        private bool sortAsc;
+        private string lastSortParam = string.Empty;
 
         private bool libraryCurrentlyPlaying;
         private bool randomPlay;
@@ -66,15 +74,15 @@ namespace ZTP_MusicPlayer.Model
 
         public IWMPPlaylist CurrentPlaylist
         {
-            get { return mPlayer.currentPlaylist; }
-            set { mPlayer.currentPlaylist = value; }
+//            get { return mPlayer.currentPlaylist; }
+//            set { mPlayer.currentPlaylist = value; }
+            get { return _currentPlaylist; }
+            set { _currentPlaylist = value; }
         }
 
         public static Dictionary<string, Song> SongInfo { get; set; }
         public ObservableCollection<IWMPPlaylist> Playlists { get; set; }
-
         public Dictionary<string, List<string>> PlaylistsUrl { get; set; }
-        //        public List<Library> Libraries { get; set; }
         public ObservableCollection<Library> Libraries { get; set; }
 
         public bool LibraryCurrentlyPlaying
@@ -98,7 +106,12 @@ namespace ZTP_MusicPlayer.Model
 
         public string CurrentPositionToString
         {
-            get { return mPlayer.controls.currentItem != null ? mPlayer.controls.currentPositionString : "00:00"; }
+            get
+            {
+                return String.IsNullOrWhiteSpace(mPlayer.controls.currentPositionString)
+                    ? "00:00"
+                    : mPlayer.controls.currentPositionString;
+            }
         }
 
         public double CurrentPosition
@@ -115,7 +128,7 @@ namespace ZTP_MusicPlayer.Model
 
         public string DurationToString
         {
-            get { return mPlayer.controls.currentItem != null ? mPlayer.controls.currentItem.durationString : "00:00"; }
+            get { return mPlayer.controls.currentItem != null ? mPlayer.controls.currentItem.durationString : "00:00"; }           
         }
 
         public double Duration
@@ -124,14 +137,18 @@ namespace ZTP_MusicPlayer.Model
         }
 
 
-
+        public Song CurrentSong
+        {
+            get { return currentSongsCollection.CurrentSong; }
+            set { currentSongsCollection.CurrentSong = value; }
+        }
         public ObservableCollection<Song> CurrentSongs
         {
-            get { return _currentSongs; }
-            set { _currentSongs = value; }
+            get { return currentSongsCollection.CurrentSongs; }
+            set { currentSongsCollection.CurrentSongs = value; }
         }
 
-        public string CurrentSong
+        public string CurrentSongString
         {
             get
             {
@@ -152,7 +169,11 @@ namespace ZTP_MusicPlayer.Model
 
         public MediaPlayer()
         {
-            mPlayer = new WindowsMediaPlayer();
+            currentSongsCollection = new CurrentSongsCollection();
+            currentSongsIterator = currentSongsCollection.CreateNormalIterator();
+            mPlayer = new WindowsMediaPlayer();           
+            mPlayer.PlayStateChange += MPlayer_PlayStateChange;
+            mPlayer.settings.autoStart = true;
             SongInfo = new Dictionary<string, Song>();
             LoadMediaInfo();
             currentPlaylistSongUrl = new List<string>();
@@ -162,6 +183,22 @@ namespace ZTP_MusicPlayer.Model
             allLibrariesPlaylistName = "allLibrariesPlaylist";
             allLibrariesPlaylist = GetPlaylistFromMediaCollection(allLibrariesPlaylistName);
             CurrentSongs = new ObservableCollection<Song>();
+            //currentSongsCollection = new CurrentSongsCollection();
+            
+        }
+
+        private void MPlayer_PlayStateChange(int NewState)
+        {
+            if (mPlayer.playState == WMPPlayState.wmppsMediaEnded)
+            {
+                Song newTrack = currentSongsIterator.Next();
+                LoadCurrentSong(newTrack);
+                //Play();
+            }
+            if (mPlayer.playState == WMPPlayState.wmppsReady)
+            {
+                Play();
+            }
         }
 
         #endregion
@@ -226,7 +263,15 @@ namespace ZTP_MusicPlayer.Model
         public bool ChangeRandomPlayStatement()
         {
             randomPlay = !randomPlay;
-            mPlayer.settings.setMode("shuffle", randomPlay);
+            //mPlayer.settings.setMode("shuffle", randomPlay);
+            if (randomPlay)
+            {
+                currentSongsIterator = currentSongsCollection.CreateRandomIterator();
+            }
+            else
+            {
+                currentSongsIterator = currentSongsCollection.CreateNormalIterator();
+            }
             return randomPlay;
         }
 
@@ -270,13 +315,11 @@ namespace ZTP_MusicPlayer.Model
         {
             libraryCurrentlyPlaying = false;
             var temporaryPlaylist = Playlists.SingleOrDefault(x => x.name.Equals(newCurrentPlaylist));
-            if (!PlaylistsUrl.ContainsKey(newCurrentPlaylist))
-            {
-                SetCurrentPlaylistSongUrl(temporaryPlaylist);
-            }
+            SetCurrentPlaylistSongUrl(temporaryPlaylist);
             currentPlaylistSongUrl = PlaylistsUrl[newCurrentPlaylist];
             SetCurrentSongs();
-            CurrentPlaylist = temporaryPlaylist;
+            CurrentSong = CurrentSongs[0];
+            CurrentPlaylist = temporaryPlaylist;            
         }
 
         private void SetCurrentPlaylistSongUrl(IWMPPlaylist playlist)
@@ -301,11 +344,11 @@ namespace ZTP_MusicPlayer.Model
         private void SetCurrentSongs()
         {
             CurrentSongs.Clear();
-            currentPlaylistSongUrl.ForEach(x =>
+            currentPlaylistSongUrl.ForEach((Action<string>)(x =>
             {
                 var song = SongInfo[x.ToLower()];
-                CurrentSongs.Add(song);
-            });
+                this.CurrentSongs.Add(song);
+            }));
         }
 
         #endregion
@@ -323,6 +366,8 @@ namespace ZTP_MusicPlayer.Model
             CurrentPlaylist = allLibrariesPlaylist;
         }
 
+        
+
         public void LoadCurrentLibrary(string newCurrentLibrary)
         {
             libraryCurrentlyPlaying = true;
@@ -336,11 +381,14 @@ namespace ZTP_MusicPlayer.Model
             currentPlaylistSongUrl = PlaylistsUrl[playlist.name];
             SetCurrentSongs();
             CurrentPlaylist = playlist;
-        }
+            LoadCurrentSong(CurrentSongs[0]);
+        }     
 
-        public void LoadCurrentSong(int index)
+        internal void LoadCurrentSong(Song track)
         {
-            mPlayer.controls.playItem(mPlayer.currentPlaylist.Item[index]);
+            CurrentSong = track;       
+            mPlayer.URL = track.Name;
+            //currentSongsIterator.SetCurrentIndex(track);
         }
 
         #endregion
@@ -485,6 +533,16 @@ namespace ZTP_MusicPlayer.Model
             }
         }
 
+        private void EditSongNullableMetadata(Song song)
+        {           
+            if (string.IsNullOrWhiteSpace(song.Tag.Title))
+            {
+                var path = Path.GetFileNameWithoutExtension(song.Name);
+                song.Tag.Title = path;
+                song.Save();
+            }               
+        }
+
         private void LoadMediaInfo()
         {
             var mediaCollection = mPlayer.mediaCollection.getByAttribute("MediaType", "audio");
@@ -493,11 +551,57 @@ namespace ZTP_MusicPlayer.Model
             {
                 var media = mediaCollection.Item[i];
                 var url = media.sourceURL;
-                var mediaInfo = Song.Create(media.sourceURL);
-                SongInfo.Add(media.sourceURL.ToLower(), mediaInfo);
+                var song = Song.Create(media.sourceURL);
+                EditSongNullableMetadata(song);
+                SongInfo.Add(media.sourceURL.ToLower(), song);
             }
         }
 
+        #endregion
+        #region SortPlaylist
+        private List<Song> CreateSortedList(string param)
+        {
+            List<Song> sortableList = null;
+            if (lastSortParam.Equals(param))
+            {
+                sortAsc = !sortAsc;
+            }
+            else
+            {
+                sortAsc = true;
+            }
+            if (param.Equals("Tag.FirstPerformer"))
+            {
+                sortableList = sortAsc 
+                    ? new List<Song>(CurrentSongs.OrderBy(i => i.Tag.FirstPerformer))
+                    : new List<Song>(CurrentSongs.OrderByDescending(i => i.Tag.FirstPerformer));
+            }
+            else if (param.Equals("Tag.Title"))
+            {
+                sortableList = sortAsc
+                    ? new List<Song>(CurrentSongs.OrderBy(i => i.Tag.Title))
+                    : new List<Song>(CurrentSongs.OrderByDescending(i => i.Tag.Title));
+            }
+            else if (param.Equals("Tag.Album"))
+            {
+                sortableList = sortAsc
+                    ? new List<Song>(CurrentSongs.OrderBy(i => i.Tag.Album))
+                    : new List<Song>(CurrentSongs.OrderByDescending(i => i.Tag.Album));
+            }
+            lastSortParam = param;
+            return sortableList;
+        }
+        public void Sort(string property)
+        {
+            var sortableList = CreateSortedList(property);
+
+            for (int i = 0; i < sortableList.Count; i++)
+            {
+                var index = CurrentSongs.IndexOf(sortableList[i]);
+                CurrentSongs.Move(index, i);
+                CurrentPlaylist.moveItem(index, i);
+            }
+        }
         #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;

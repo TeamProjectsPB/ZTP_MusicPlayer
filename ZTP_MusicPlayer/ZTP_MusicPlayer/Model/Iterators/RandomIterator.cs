@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TagLib;
+using ZTP_MusicPlayer.Model.Iterators.PreviousTrackMemento;
 
 namespace ZTP_MusicPlayer.Model.Iterators
 {
@@ -12,6 +13,8 @@ namespace ZTP_MusicPlayer.Model.Iterators
         Random rand;
         CurrentSongsCollection collection;
         private int _current = 0;
+
+
 
         public RandomIterator(CurrentSongsCollection collection)
         {
@@ -34,11 +37,26 @@ namespace ZTP_MusicPlayer.Model.Iterators
             return collection[_current];
         }
 
-        public File CurrentItem { get { return collection[_current]; } }
-
         public void SetCurrentIndex(File track)
         {
             _current = collection.CurrentSongs.IndexOf(track);
+        }
+
+        public bool CanPrevious()
+        {
+            return !collection.IsCareTakerStackEmpty();
+        }
+
+        public File Previous()
+        {
+            //throw new NotImplementedException();
+            return collection.GetPreviousSong();
+        }
+
+        public bool CanNext()
+        {
+            //throw new NotImplementedException();
+            return true;
         }
     }
 }

@@ -11,7 +11,6 @@ namespace ZTP_MusicPlayer.Model.Iterators
     class Iterator : IAbstractIterator
     {
         CurrentSongsCollection collection;
-        private int _current = 0;
         private int _step = 1;
 
         public Iterator(CurrentSongsCollection collection)
@@ -21,22 +20,43 @@ namespace ZTP_MusicPlayer.Model.Iterators
 
         public Song First()
         {
-            _current = 0;
+            int _current = 0;
             return collection[_current];
         }
 
         public Song Next()
         {
-            _current = collection.CurrentSongIndex();
-            _current += _step;
-            if (_current >= collection.Count)
-            {
-                _current = 0;
-            }
+            int _current = collection.CurrentSongIndex();
+//            _current += _step;
+            _current = (_current + _step)%collection.Count;
+//            if (_current >= collection.Count)
+//            {
+//                _current = 0;
+//            }
             return collection[_current];
         }
 
-        public Song CurrentItem { get { return collection[_current]; } }
+        public bool CanPrevious()
+        {
+            return true;
+        }
+
+        public Song Previous()
+        {
+            int _current = collection.CurrentSongIndex();
+            //            _current -= _step;
+            //            if (_current < 0)
+            //            {
+            //                _current = 0;
+            //            }
+            _current = (_current - _step) % collection.Count;
+            return collection[_current];
+        }
+
+        public bool CanNext()
+        {
+            return true;
+        }
 
     }
 }

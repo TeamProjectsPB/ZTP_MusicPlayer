@@ -73,6 +73,11 @@
     <Compile Include="Model\Iterators\IAbstractCollection.cs" />
     <Compile Include="Model\Iterators\IAbstractIterator.cs" />
     <Compile Include="Model\Iterators\Iterator.cs" />
+    <Compile Include="Model\Iterators\PreviousTrackMemento\Caretaker.cs" />
+    <Compile Include="Model\Iterators\PreviousTrackMemento\ICaretaker.cs" />
+    <Compile Include="Model\Iterators\PreviousTrackMemento\LastSongs.cs" />
+    <Compile Include="Model\Iterators\PreviousTrackMemento\Memento.cs" />
+    <Compile Include="Model\Iterators\PreviousTrackMemento\Originator.cs" />
     <Compile Include="Model\Iterators\RandomIterator.cs" />
     <Compile Include="ViewModel\AddLibraryViewModel.cs" />
     <Compile Include="ViewModel\AddNewPlaylistViewModel.cs" />

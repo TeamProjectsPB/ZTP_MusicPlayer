@@ -274,12 +274,22 @@ namespace ZTP_MusicPlayer.ViewModel
             addTrackToPlaylist = new RelayCommand(AddTrackToPlaylistExecute, param => true);
             play = new RelayCommand(PlayExecute, param => true);
             stop = new RelayCommand(StopExecute, param => true);
-            previous = new RelayCommand(PreviousExecute, param => true);
-            next = new RelayCommand(NextExecute, param => true);
+            previous = new RelayCommand(PreviousExecute, CanPreviousExecute);
+            next = new RelayCommand(NextExecute, CanNextExecute);
             _repeatAllCommand = new RelayCommand(RepeatAllExecute);
             _randomPlayCommand = new RelayCommand(RandomPlayExecute);
             _runLibraryWindowCommand = new RelayCommand(RunLibraryWindowExecute, RunLibraryWindowCanExecute);
             _sortCommand = new RelayCommand(SortExecute);
+        }
+
+        private bool CanNextExecute(object obj)
+        {
+            return player.CanNextTrack();
+        }
+
+        private bool CanPreviousExecute(object o)
+        {
+            return player.CanPreviousTrack();
         }
 
         private void SortExecute(object o)

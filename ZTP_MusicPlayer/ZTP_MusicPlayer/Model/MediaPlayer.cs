@@ -171,6 +171,7 @@ namespace ZTP_MusicPlayer.Model
         {
             currentSongsCollection = new CurrentSongsCollection();
             currentSongsIterator = currentSongsCollection.CreateNormalIterator();
+            
             mPlayer = new WindowsMediaPlayer();           
             mPlayer.PlayStateChange += MPlayer_PlayStateChange;
             mPlayer.settings.autoStart = true;
@@ -184,7 +185,7 @@ namespace ZTP_MusicPlayer.Model
             allLibrariesPlaylist = GetPlaylistFromMediaCollection(allLibrariesPlaylistName);
             CurrentSongs = new ObservableCollection<Song>();
             //currentSongsCollection = new CurrentSongsCollection();
-            
+
         }
 
         private void MPlayer_PlayStateChange(int NewState)
@@ -232,14 +233,27 @@ namespace ZTP_MusicPlayer.Model
             mPlayer.controls.stop();
         }
 
+        public bool CanNextTrack()
+        {
+            return currentSongsIterator.CanNext();
+        }
         public void NextTrack()
         {
-            mPlayer.controls.next();
+            Song newTrack = currentSongsIterator.Next();
+            LoadCurrentSong(newTrack);
+            //mPlayer.controls.next();
+
+        }
+
+        public bool CanPreviousTrack()
+        {
+            return currentSongsIterator.CanPrevious();
         }
 
         public void PreviousTrack()
         {
-            mPlayer.controls.previous();
+            Song newTrack = currentSongsIterator.Previous();
+            LoadCurrentSong(newTrack);
         }
 
         public int VolumeUp()
@@ -318,7 +332,8 @@ namespace ZTP_MusicPlayer.Model
             SetCurrentPlaylistSongUrl(temporaryPlaylist);
             currentPlaylistSongUrl = PlaylistsUrl[newCurrentPlaylist];
             SetCurrentSongs();
-            CurrentSong = CurrentSongs[0];
+            //CurrentSong = CurrentSongs[0];
+            LoadCurrentSong(currentSongsIterator.First());
             CurrentPlaylist = temporaryPlaylist;            
         }
 
@@ -381,14 +396,23 @@ namespace ZTP_MusicPlayer.Model
             currentPlaylistSongUrl = PlaylistsUrl[playlist.name];
             SetCurrentSongs();
             CurrentPlaylist = playlist;
-            LoadCurrentSong(CurrentSongs[0]);
+            //LoadCurrentSong(CurrentSongs[0]);
+            LoadCurrentSong(currentSongsIterator.First());
         }     
 
         internal void LoadCurrentSong(Song track)
         {
-            CurrentSong = track;       
-            mPlayer.URL = track.Name;
+            if (track != null)
+            {
+                CurrentSong = track;
+                mPlayer.URL = track.Name;
+            }
             //currentSongsIterator.SetCurrentIndex(track);
+        }
+
+        internal void LoadCurrentSong()
+        {
+            mPlayer.URL = CurrentSong.Name;
         }
 
         #endregion

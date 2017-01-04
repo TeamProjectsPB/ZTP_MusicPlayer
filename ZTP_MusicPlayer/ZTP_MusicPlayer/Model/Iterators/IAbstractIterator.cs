@@ -9,8 +9,10 @@ namespace ZTP_MusicPlayer.Model.Iterators
     interface IAbstractIterator
     {
         Song First();
+        bool CanPrevious();
+        Song Previous();
+        bool CanNext();
         Song Next();
-        Song CurrentItem { get; }
         //void SetCurrentIndex(Song track);
     }
 }

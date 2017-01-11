@@ -23,10 +23,19 @@ namespace ZTP_MusicPlayer.ViewModel
             set { dialogResult = value; OnPropertyChanged("DialogResult"); }
         }
 
-        public IWMPPlaylist SelectedPlaylist { get; set; }
-        public ObservableCollection<IWMPPlaylist> Playlists
+        //        private IWMPPlaylist _selectedPlaylist;
+        //        public IWMPPlaylist SelectedPlaylist { get { return _selectedPlaylist; } set { _selectedPlaylist = value; } }
+        //        public ObservableCollection<IWMPPlaylist> Playlists
+        //        {
+        //            get { return MediaPlayer.Instance.Playlists; }
+        //        }
+        private string _selectedPlaylist;
+        public string SelectedPlaylist { get { return _selectedPlaylist; } set { _selectedPlaylist = value; } }
+        public List<string> Playlists { get { return MediaPlayer.Instance.Playlists.Select(x => x.name).ToList(); } }
+
+        public AddTrackToPlaylistViewModel()
         {
-            get { return MediaPlayer.Instance.Playlists; }
+            //SelectedPlaylist = Playlists.FirstOrDefault();
         }
 
         private ICommand cancel, addToPlaylist;
@@ -60,7 +69,7 @@ namespace ZTP_MusicPlayer.ViewModel
 
         private bool AddToPlaylistCanExecute(object o)
         {
-            return SelectedPlaylist != null;
+            return o != null;
         }
 
         private void AddToPlaylistExecute(object o)

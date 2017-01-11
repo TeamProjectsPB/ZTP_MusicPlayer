@@ -131,19 +131,13 @@
             </GroupBox.Header>
             <ListView Name="CurrentPlayingListView" Margin="5"
                       IsSynchronizedWithCurrentItem="True"
-                      converter:GridViewSort.AutoSort="True"
-                      converter:GridViewSort.ShowSortGlyph="True"
                       ctrl:ListViewLayoutManager.Enabled="True"                      
                       ItemsSource="{Binding CurrentSongs}">
-<!--                <ListView.InputBindings>-->
-<!--                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Source={StaticResource Proxy}, Path=Data.PlaySongCommand}" CommandParameter="{Binding ElementName=CurrentPlayingListView, Path=SelectedItem}"/>-->
-<!--                </ListView.InputBindings>-->
                 <ListView.View>
                     <GridView>
                         <GridView.ColumnHeaderContainerStyle>
                             <Style>
-                                <Setter Property="HeaderedItemsControl.FontSize"
-							    Value="16" />
+                                <Setter Property="HeaderedItemsControl.FontSize" Value="16" />
                             </Style>
                         </GridView.ColumnHeaderContainerStyle>
                         <GridViewColumn ctrl:ProportionalColumn.Width="1">
@@ -154,6 +148,12 @@
                                         <TextBlock.InputBindings>
                                             <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Source={StaticResource Proxy}, Path=Data.PlaySongCommand}" CommandParameter="{Binding ElementName=CurrentPlayingListView, Path=SelectedItem}"/>
                                         </TextBlock.InputBindings>
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Dodaj do playlisty..." Name="AddTrackToPlaylistItem" Command="{Binding Source={StaticResource Proxy}, Path=Data.AddTrackToPlaylistCommand}" CommandParameter="{Binding}"/>
+                                                <MenuItem Header="Usuń z aktualnie odtwarzanych" Name="RemoveTrackItem" Command="{Binding Source={StaticResource Proxy}, Path=Data.RemoveTrackFromPlaylist}" CommandParameter="{Binding}" />
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
                                     </TextBlock>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -166,6 +166,12 @@
                                         <TextBlock.InputBindings>
                                             <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Source={StaticResource Proxy}, Path=Data.PlaySongCommand}" CommandParameter="{Binding ElementName=CurrentPlayingListView, Path=SelectedItem}"/>
                                         </TextBlock.InputBindings>
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Dodaj do playlisty..." Name="AddTrackToPlaylistItem" Command="{Binding Source={StaticResource Proxy}, Path=Data.AddTrackToPlaylistCommand}" CommandParameter="{Binding}"/>
+                                                <MenuItem Header="Usuń z aktualnie odtwarzanych" Name="RemoveTrackItem" Command="{Binding Source={StaticResource Proxy}, Path=Data.RemoveTrackFromPlaylist}" CommandParameter="{Binding}" />
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
                                     </TextBlock>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -178,6 +184,12 @@
                                         <TextBlock.InputBindings>
                                             <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Source={StaticResource Proxy}, Path=Data.PlaySongCommand}" CommandParameter="{Binding ElementName=CurrentPlayingListView, Path=SelectedItem}"/>
                                         </TextBlock.InputBindings>
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Dodaj do playlisty..." Name="AddTrackToPlaylistItem" Command="{Binding Source={StaticResource Proxy}, Path=Data.AddTrackToPlaylistCommand}" CommandParameter="{Binding}"/>
+                                                <MenuItem Header="Usuń z aktualnie odtwarzanych" Name="RemoveTrackItem" Command="{Binding Source={StaticResource Proxy}, Path=Data.RemoveTrackFromPlaylist}" CommandParameter="{Binding}" />
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
                                     </TextBlock>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>

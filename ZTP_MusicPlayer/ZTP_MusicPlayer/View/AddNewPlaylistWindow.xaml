@@ -27,7 +27,18 @@
 
         <Label Content="Dodawanie nowej playlisty" FontSize="16" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Foreground="Blue"/>
         <Label Content="Nazwa: " Grid.Row="1" Grid.Column="0" Margin="5" Padding="3"/>
-        <TextBox Name="PlaylistNameTextBox"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" Padding="3" Text="{Binding Path=PlaylistName, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Name="PlaylistNameTextBox"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" Padding="3" Text="{Binding Path=PlaylistName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <Trigger Property="Validation.HasError" Value="true">
+                            <Setter Property="ToolTip"
+                                    Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
 
         <Grid Grid.Row="2" Grid.Column="2">
             <Grid.ColumnDefinitions>

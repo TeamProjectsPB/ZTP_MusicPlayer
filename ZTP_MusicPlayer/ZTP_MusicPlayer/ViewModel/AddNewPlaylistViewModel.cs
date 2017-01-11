@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -12,7 +13,7 @@ using ZTP_MusicPlayer.Model;
 
 namespace ZTP_MusicPlayer.ViewModel
 {
-    class AddNewPlaylistViewModel : INotifyPropertyChanged
+    class AddNewPlaylistViewModel : INotifyPropertyChanged, IDataErrorInfo
     {
         private ICommand okCommand, cancelCommand;
         private string playlistName;
@@ -58,7 +59,7 @@ namespace ZTP_MusicPlayer.ViewModel
 
         private bool OkCanExecute(object o)
         {
-            return !String.IsNullOrWhiteSpace(playlistName);
+            return String.IsNullOrEmpty(this["PlaylistName"]);
         }
 
         private void OkExecute(object o)
@@ -76,12 +77,38 @@ namespace ZTP_MusicPlayer.ViewModel
         {
             DialogResult = false;
         }
-
+        #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
+
+        #region IDataError
+        public string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case "PlaylistName":
+                        if (string.IsNullOrWhiteSpace(PlaylistName))
+                        {
+                            return "Wprowadz nazwę.";
+                        }
+                        else if (!Regex.IsMatch(PlaylistName, "^[a-zA-Z0-9 _]*$"))
+                        {
+                            return "Nazwa może zawierać wyłącznie litery, cyfry, spację oraz twardą spację.";
+                        }
+                        break;                    
+                }
+                return string.Empty;
+            }
+        }
+
+        public string Error { get; }
+        #endregion
     }
 }

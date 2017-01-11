@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
          xmlns:viewmodel="clr-namespace:ZTP_MusicPlayer.ViewModel"        
         xmlns:local="clr-namespace:ZTP_MusicPlayer.View"
+        xmlns:converter="clr-namespace:ZTP_MusicPlayer.Converter"
         mc:Ignorable="d"
          Title="Dodaj piosenkę do playlisty" Height="300" Width="300" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
@@ -14,20 +15,30 @@
         <viewmodel:AddTrackToPlaylistViewModel/>
     </Window.DataContext>
     <Grid>
+        <Grid.Resources>
+            <converter:BindingProxy Data="{Binding}" x:Key="Proxy"/>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <ListView Name="PlaylistListView" Margin="3"
                   ItemsSource="{Binding Playlists}"
-                  DisplayMemberPath="name"
                   SelectedItem="{Binding SelectedPlaylist}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                    <EventSetter Event="MouseDoubleClick" x:Name="CurrentPlaylistItemDoubleClick" Handler="{Binding AddToPlaylist}"/>
                 </Style>
             </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+               <DataTemplate>
+                    <TextBlock Text="{Binding }">
+                        <TextBlock.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Source={StaticResource Proxy}, Path=Data.AddToPlaylist}" CommandParameter="{Binding ElementName=PlaylistListView, Path=SelectedItem}"></MouseBinding>
+                        </TextBlock.InputBindings>
+                    </TextBlock>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
         <Button Grid.Row="1" Content="Zamknij" Name="CloseButton" Command="{Binding Cancel}"  Margin="3"
                 HorizontalContentAlignment="Center" HorizontalAlignment="Center"/>

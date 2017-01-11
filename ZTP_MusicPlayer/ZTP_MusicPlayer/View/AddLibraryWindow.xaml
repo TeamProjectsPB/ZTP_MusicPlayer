@@ -50,8 +50,6 @@
             </Grid.RowDefinitions>
             <Button Name="AddLibraryBtn" Grid.Row="0" Content="Dodaj..." Margin="5" Padding="3" Command="{Binding AddLibraryCommand}"/>
             <Button Name="DelLibraryBtn" Grid.Row="1" Content="Usuń..." Margin="5" Padding="3" Command="{Binding RemoveLibraryCommand}"/>
-            <!--IsEnabled="{Binding ElementName=LibrariesListView, Path=SelectedItems.Count}"-->
         </Grid>
-
     </Grid>
 </Window>

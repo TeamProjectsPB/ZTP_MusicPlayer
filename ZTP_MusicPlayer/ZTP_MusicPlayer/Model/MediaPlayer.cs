@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using TagLib;
 using WMPLib;
 using ZTP_MusicPlayer.Model;
@@ -41,14 +42,11 @@ namespace ZTP_MusicPlayer.Model
         {
             ".WAV", ".WMA", ".MP3"
         };
-
-        private readonly string fileUrl = Directory.GetCurrentDirectory() + "\\config.dat";
         private WindowsMediaPlayer mPlayer;
         private IWMPPlaylist _currentPlaylist;
         private List<string> currentPlaylistSongUrl;
         private IWMPPlaylist allLibrariesPlaylist;
         private string allLibrariesPlaylistName;
-        //private ObservableCollection<Song> CurrentSongs;
         private CurrentSongsCollection currentSongsCollection;
         private IAbstractIterator currentSongsIterator;
         private bool sortAsc;
@@ -57,16 +55,19 @@ namespace ZTP_MusicPlayer.Model
         private bool libraryCurrentlyPlaying;
         private bool randomPlay;
         private bool repeatAll;
+        private bool isNewSongLoaded;
+        private DispatcherTimer songChangeTimer;
+
+        private static Dictionary<string, Song> _songInfo;
+        private ObservableCollection<IWMPPlaylist> _playlists;
+        private Dictionary<string, List<string>> _playlistsUrl;
+        private ObservableCollection<Library> _libraries;
+
+
 
         #endregion
 
         #region Properties
-
-        public string FileUrl
-        {
-            get { return fileUrl; }
-        }
-
         public WindowsMediaPlayer MPlayer
         {
             get { return mPlayer; }
@@ -74,16 +75,14 @@ namespace ZTP_MusicPlayer.Model
 
         public IWMPPlaylist CurrentPlaylist
         {
-//            get { return mPlayer.currentPlaylist; }
-//            set { mPlayer.currentPlaylist = value; }
             get { return _currentPlaylist; }
             set { _currentPlaylist = value; }
         }
 
-        public static Dictionary<string, Song> SongInfo { get; set; }
-        public ObservableCollection<IWMPPlaylist> Playlists { get; set; }
-        public Dictionary<string, List<string>> PlaylistsUrl { get; set; }
-        public ObservableCollection<Library> Libraries { get; set; }
+        public static Dictionary<string, Song> SongInfo { get { return _songInfo; } set { _songInfo = value; } }
+        public ObservableCollection<IWMPPlaylist> Playlists { get { return _playlists; } set { _playlists = value; } }
+        public Dictionary<string, List<string>> PlaylistsUrl { get { return _playlistsUrl; } set { _playlistsUrl = value; } }
+        public ObservableCollection<Library> Libraries { get { return _libraries; } set { _libraries = value; } }
 
         public bool LibraryCurrentlyPlaying
         {
@@ -184,22 +183,34 @@ namespace ZTP_MusicPlayer.Model
             allLibrariesPlaylistName = "allLibrariesPlaylist";
             allLibrariesPlaylist = GetPlaylistFromMediaCollection(allLibrariesPlaylistName);
             CurrentSongs = new ObservableCollection<Song>();
-            //currentSongsCollection = new CurrentSongsCollection();
+            songChangeTimer = new DispatcherTimer();
+            songChangeTimer.Interval = TimeSpan.FromMilliseconds(500);
+            songChangeTimer.Tick += SongChangeTimer_Tick;
+            songChangeTimer.Start();        
 
+        }
+
+        private void SongChangeTimer_Tick(object sender, EventArgs e)
+        {
+            if (isNewSongLoaded)
+            {
+                Play();
+                isNewSongLoaded = false;
+            }
         }
 
         private void MPlayer_PlayStateChange(int NewState)
         {
             if (mPlayer.playState == WMPPlayState.wmppsMediaEnded)
             {
-                Song newTrack = currentSongsIterator.Next();
-                LoadCurrentSong(newTrack);
-                //Play();
-            }
-            if (mPlayer.playState == WMPPlayState.wmppsReady)
-            {
-                Play();
-            }
+                bool changeTrack = !(currentSongsCollection.CurrentSongIndex() == currentSongsCollection.Count - 1 && !repeatAll);
+                if (changeTrack)
+                {
+                    Song newTrack = currentSongsIterator.Next();
+                    LoadCurrentSong(newTrack);
+                    isNewSongLoaded = true;
+                }
+            }            
         }
 
         #endregion
@@ -428,6 +439,13 @@ namespace ZTP_MusicPlayer.Model
             SetCurrentPlaylistSongUrl(CurrentPlaylist);
         }
 
+        public void RemoveTrack(Song song)
+        {
+            var index = CurrentSongs.IndexOf(song);
+            currentSongsCollection.CurrentSongs.Remove(song);
+            CurrentPlaylist.removeItem(CurrentPlaylist.Item[index]);
+        }
+
         //return: true - current playlist was removed;
         public bool RemovePlaylist(string name)
         {
@@ -448,7 +466,6 @@ namespace ZTP_MusicPlayer.Model
 
         public bool RemoveLibrary(string name)
         {
-            //            var library = Libraries.Find(x => x.Name.Equals(name));
             var library = Libraries.SingleOrDefault(x => x.Name.Equals(name));
             var libraryPlaylistName = library.Playlist.name;
             bool removedCurrentLibrary = CurrentPlaylist.name.Equals(libraryPlaylistName);
@@ -534,13 +551,12 @@ namespace ZTP_MusicPlayer.Model
 
         public void AddTrackToPlaylist(int trackIndex, string playlistName)
         {
-            var song = mPlayer.currentPlaylist.Item[trackIndex];
+            var song = CurrentPlaylist.Item[trackIndex];
             var playlists = mPlayer.playlistCollection.getByName(playlistName);
             for (int i = 0; i < playlists.count; i++)
             {
                 mPlayer.playlistCollection.getByName(playlistName).Item(i).appendItem(song);
             }
-            SetCurrentPlaylistSongUrl(playlists.Item(0));
         }
 
         public void CreatePlaylist(string name)

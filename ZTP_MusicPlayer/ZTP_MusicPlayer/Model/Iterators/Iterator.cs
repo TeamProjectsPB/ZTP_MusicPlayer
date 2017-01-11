@@ -27,12 +27,7 @@ namespace ZTP_MusicPlayer.Model.Iterators
         public Song Next()
         {
             int _current = collection.CurrentSongIndex();
-//            _current += _step;
             _current = (_current + _step)%collection.Count;
-//            if (_current >= collection.Count)
-//            {
-//                _current = 0;
-//            }
             return collection[_current];
         }
 
@@ -44,12 +39,11 @@ namespace ZTP_MusicPlayer.Model.Iterators
         public Song Previous()
         {
             int _current = collection.CurrentSongIndex();
-            //            _current -= _step;
-            //            if (_current < 0)
-            //            {
-            //                _current = 0;
-            //            }
-            _current = (_current - _step) % collection.Count;
+            _current -= _step;
+            if (_current < 0)
+            {
+                _current = collection.Count-1;
+            }
             return collection[_current];
         }
 

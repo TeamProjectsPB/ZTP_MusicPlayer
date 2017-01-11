@@ -24,8 +24,7 @@ namespace ZTP_MusicPlayer.ViewModel
     {
         #region Members
         private static DispatcherTimer timer;
-        private MediaPlayer player = MediaPlayer.Instance;
-//        private string fileUrl;      
+        private MediaPlayer player = MediaPlayer.Instance;     
         private bool repeatAll;
         private bool randomPlay;
         #endregion
@@ -92,13 +91,6 @@ namespace ZTP_MusicPlayer.ViewModel
             get { return player.CurrentSongs; }
         }
 
-
-
-//        public List<string> PlaylistsToString
-//        {
-//            get { return player.PlaylistsToString; }
-//        }
-
         public string CurrentSongString
         {
             get { return player.CurrentSongString; }
@@ -138,7 +130,6 @@ namespace ZTP_MusicPlayer.ViewModel
             {
                 ConfigFile.CreateNewFile();
             }
-            //CreateTitleToFilesWithoutMetaData();
             timer = new DispatcherTimer();
             timer.Tick += TimerOnTick;
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -161,7 +152,7 @@ namespace ZTP_MusicPlayer.ViewModel
         private ICommand _runLibraryWindowCommand;
         private ICommand _playPlaylistCommand, _playLibraryCommand, _playSongCommand;
         private ICommand _removeLibraryCommand, _removePlaylistCommand;
-        private ICommand addTrackToPlaylist;
+        private ICommand addTrackToPlaylist, removeTrackFromPlaylist;
         private ICommand addNewPlaylist;
         private ICommand play, stop, previous, next;
         private ICommand _repeatAllCommand, _randomPlayCommand;
@@ -186,6 +177,12 @@ namespace ZTP_MusicPlayer.ViewModel
         {
             get { return addTrackToPlaylist; }
             set { addTrackToPlaylist = value; }
+        }
+
+        public ICommand RemoveTrackFromPlaylist
+        {
+            get { return removeTrackFromPlaylist; }
+            set { removeTrackFromPlaylist = value; }
         }
 
         public ICommand AddNewPlaylist
@@ -271,7 +268,8 @@ namespace ZTP_MusicPlayer.ViewModel
             _playPlaylistCommand = new RelayCommand(PlayPlaylistExecute);
             _playSongCommand = new RelayCommand(PlaySongExecute, PlaySongCanExecute);
             addNewPlaylist = new RelayCommand(AddNewPlaylistExecute, param => true);
-            addTrackToPlaylist = new RelayCommand(AddTrackToPlaylistExecute, param => true);
+            addTrackToPlaylist = new RelayCommand(AddTrackToPlaylistExecute, CanAddTrackToPlaylistExecute);
+            removeTrackFromPlaylist = new RelayCommand(RemoveTrackFromPlaylistExecute, CanRemoveTrackFromPlaylist);
             play = new RelayCommand(PlayExecute, param => true);
             stop = new RelayCommand(StopExecute, param => true);
             previous = new RelayCommand(PreviousExecute, CanPreviousExecute);
@@ -281,6 +279,8 @@ namespace ZTP_MusicPlayer.ViewModel
             _runLibraryWindowCommand = new RelayCommand(RunLibraryWindowExecute, RunLibraryWindowCanExecute);
             _sortCommand = new RelayCommand(SortExecute);
         }
+
+       
 
         private bool CanNextExecute(object obj)
         {
@@ -360,10 +360,31 @@ namespace ZTP_MusicPlayer.ViewModel
         {
             player.RemovePlaylist((o as IWMPPlaylist).name);
         }
+
+        
+        private bool CanRemoveTrackFromPlaylist(object o)
+        {
+            return o != null;
+        }
+        private void RemoveTrackFromPlaylistExecute(object obj)
+        {
+            player.RemoveTrack(obj as Song);
+        }
+
+        private bool CanAddTrackToPlaylistExecute(object obj)
+        {
+            return obj != null;
+        }
         private void AddTrackToPlaylistExecute(object obj)
         {
-            
-
+            AddTrackToPlaylistWindow dialog = new AddTrackToPlaylistWindow();
+            if (dialog.ShowDialog() == true)
+            {
+                var viewmodel = (AddTrackToPlaylistViewModel) dialog.DataContext;
+                var index = CurrentSongs.IndexOf(obj as Song);
+                var playlist = viewmodel.SelectedPlaylist;                
+                player.AddTrackToPlaylist(index, playlist);
+            }
         }
         private void NextExecute(object obj)
         {
@@ -395,39 +416,6 @@ namespace ZTP_MusicPlayer.ViewModel
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
         }
-        #endregion
-
-        #region SongMetaData
-
-//        private void CreateTitleToFilesWithoutMetaData()
-//        {
-//            foreach (Song song in CurrentSongs)
-//            {
-//                bool songEdited = false;
-//                if (string.IsNullOrWhiteSpace(song.Tag.FirstPerformer))
-//                {
-//                    song.Tag.Performers = null;
-//                    song.Tag.Performers = new String[1] { string.Empty };
-//                    songEdited = true;
-//                }
-//                if (string.IsNullOrWhiteSpace(song.Tag.Title))
-//                {
-//                    var path = Path.GetFileNameWithoutExtension(song.Name);
-//                    song.Tag.Title = path;
-//                    songEdited = true;
-//                }
-//                
-//                if (string.IsNullOrWhiteSpace(song.Tag.Album))
-//                {
-//                    song.Tag.Album = string.Empty;
-//                    songEdited = true;
-//                }
-//                if (songEdited)
-//                {
-//                    song.Save();
-//                }
-//            }
-//        }
         #endregion
         #region Add
 

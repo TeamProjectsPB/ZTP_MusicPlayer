@@ -28,7 +28,18 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Label>Podaj nazwę biblioteki:</Label>
-            <TextBox Name="LibraryNameTextBox" Grid.Column="1" Margin="3" Text="{Binding Path=LibName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+            <TextBox Name="LibraryNameTextBox" Grid.Column="1" Margin="3" Text="{Binding Path=LibName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+                <TextBox.Style>
+                    <Style TargetType="{x:Type TextBox}">
+                        <Style.Triggers>
+                            <Trigger Property="Validation.HasError" Value="true">
+                                <Setter Property="ToolTip"
+                                    Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
         </Grid>
         <Separator Grid.Row="1"/>
         <folderPickerLib:FolderPickerControl Margin="3" Name="FolderPickerControl"  Grid.Row="2" Grid.ColumnSpan="2" />

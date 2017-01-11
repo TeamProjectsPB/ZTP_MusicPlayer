@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using FolderPickerLib;
@@ -105,7 +106,11 @@ namespace ZTP_MusicPlayer.ViewModel
                         {
                             return "Wprowadz nazwę.";
                         }
-                        break;
+                        else if (!Regex.IsMatch(LibName, "^[a-zA-Z0-9 _]*$"))
+                        {
+                            return "Nazwa może zawierać wyłącznie litery, cyfry, spację oraz twardą spację.";
+                        }                
+                break;
                     case "SourceUrl":
                         if (string.IsNullOrWhiteSpace(SourceUrl))
                         {

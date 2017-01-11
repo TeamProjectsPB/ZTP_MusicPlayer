@@ -238,7 +238,6 @@ namespace ZTP_MusicPlayer.Model
         {
             var newTrack = currentSongsIterator.Next();
             LoadCurrentSong(newTrack);
-            //mPlayer.controls.next();
         }
 
         public bool CanPreviousTrack()
@@ -273,7 +272,6 @@ namespace ZTP_MusicPlayer.Model
         public bool ChangeRandomPlayStatement()
         {
             randomPlay = !randomPlay;
-            //mPlayer.settings.setMode("shuffle", randomPlay);
             if (randomPlay)
             {
                 currentSongsIterator = currentSongsCollection.CreateRandomIterator();

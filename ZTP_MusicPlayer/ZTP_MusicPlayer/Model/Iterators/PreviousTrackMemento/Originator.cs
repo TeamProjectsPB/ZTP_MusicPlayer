@@ -9,9 +9,6 @@ namespace ZTP_MusicPlayer.Model.Iterators.PreviousTrackMemento
 
         public Memento CreateMemento()
         {
-            //Memento m = new Memento(state);
-            //m.SetState(state);
-            //return m;
             return new Memento(State);
         }
 
@@ -19,10 +16,5 @@ namespace ZTP_MusicPlayer.Model.Iterators.PreviousTrackMemento
         {
             State = m.GetState();
         }
-
-        /*public void SetState(Song state)
-        {
-            this.state = state;
-        }*/
     }
 }

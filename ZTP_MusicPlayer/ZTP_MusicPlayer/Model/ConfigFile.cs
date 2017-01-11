@@ -124,7 +124,6 @@ namespace ZTP_MusicPlayer.Model
         public static List<Tuple<string, string>> GetLibraries()
         {
             var tuples = new List<Tuple<string, string>>();
-            //List<string> libraries = new List<string>();
             try
             {
                 var document = new XmlDocument();
@@ -187,9 +186,6 @@ namespace ZTP_MusicPlayer.Model
 
         public static void SaveVolume(int volume)
         {
-            //XDocument xDocument = XDocument.Load(fileUrl);
-            //XElement root = xDocument.Element("player");
-            //IEnumerable<XElement> rows = root.Descendants("head");
             if (File.Exists(fileUrl))
             {
                 try
@@ -227,9 +223,6 @@ namespace ZTP_MusicPlayer.Model
 
         public static void SaveNewPlaylist(string name)
         {
-            //XDocument xDocument = XDocument.Load(fileUrl);
-            //XElement root = xDocument.Element("player");
-            //IEnumerable<XElement> rows = root.Descendants("head");
             if (File.Exists(fileUrl))
             {
                 try
@@ -252,9 +245,6 @@ namespace ZTP_MusicPlayer.Model
 
         public static void SaveNewLibrary(string name, string libUrl)
         {
-            //XDocument xDocument = XDocument.Load(fileUrl);
-            //XElement root = xDocument.Element("player");
-            //IEnumerable<XElement> rows = root.Descendants("head");
             if (File.Exists(fileUrl))
             {
                 try

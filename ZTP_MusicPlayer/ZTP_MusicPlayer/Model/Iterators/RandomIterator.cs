@@ -39,13 +39,11 @@ namespace ZTP_MusicPlayer.Model.Iterators
 
         public File Previous()
         {
-            //throw new NotImplementedException();
             return collection.GetPreviousSong();
         }
 
         public bool CanNext()
         {
-            //throw new NotImplementedException();
             return true;
         }
 

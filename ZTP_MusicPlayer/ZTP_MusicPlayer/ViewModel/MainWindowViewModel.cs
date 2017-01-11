@@ -310,7 +310,6 @@ namespace ZTP_MusicPlayer.ViewModel
         public void CreateLibrary(string name, string url)
         {
             player.CreateLibrary(name, url);
-//            CreateTitleToFilesWithoutMetaData();
         }
 
         #endregion

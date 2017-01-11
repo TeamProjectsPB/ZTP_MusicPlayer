@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Song = TagLib.File;
+﻿using Song = TagLib.File;
 
 namespace ZTP_MusicPlayer.Model.Iterators.PreviousTrackMemento
 {
     //MementoPattern
-    class Originator
+    internal class Originator
     {
-        private Song state;
-
-        public Song State { get { return state; } set { state = value; } }
+        public Song State { get; set; }
 
         public Memento CreateMemento()
         {
             //Memento m = new Memento(state);
             //m.SetState(state);
             //return m;
-            return new Memento(state);
+            return new Memento(State);
         }
 
         public void SetMemento(Memento m)

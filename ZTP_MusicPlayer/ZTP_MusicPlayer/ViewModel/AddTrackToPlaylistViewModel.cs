@@ -1,44 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using WMPLib;
 using ZTP_MusicPlayer.Command;
 using ZTP_MusicPlayer.Model;
 
 namespace ZTP_MusicPlayer.ViewModel
 {
-    class AddTrackToPlaylistViewModel : INotifyPropertyChanged
+    internal class AddTrackToPlaylistViewModel : INotifyPropertyChanged
     {
+        #region Members
+        private ICommand cancel, addToPlaylist;
         private bool? dialogResult;
-
+        #endregion
+        #region Properties
         public bool? DialogResult
         {
             get { return dialogResult; }
-            set { dialogResult = value; OnPropertyChanged("DialogResult"); }
+            set
+            {
+                dialogResult = value;
+                OnPropertyChanged("DialogResult");
+            }
         }
 
-        //        private IWMPPlaylist _selectedPlaylist;
-        //        public IWMPPlaylist SelectedPlaylist { get { return _selectedPlaylist; } set { _selectedPlaylist = value; } }
-        //        public ObservableCollection<IWMPPlaylist> Playlists
-        //        {
-        //            get { return MediaPlayer.Instance.Playlists; }
-        //        }
-        private string _selectedPlaylist;
-        public string SelectedPlaylist { get { return _selectedPlaylist; } set { _selectedPlaylist = value; } }
-        public List<string> Playlists { get { return MediaPlayer.Instance.Playlists.Select(x => x.name).ToList(); } }
+        public string SelectedPlaylist { get; set; }
 
-        public AddTrackToPlaylistViewModel()
+        public List<string> Playlists
         {
-            //SelectedPlaylist = Playlists.FirstOrDefault();
+            get { return MediaPlayer.Instance.Playlists.Select(x => x.name).ToList(); }
         }
-
-        private ICommand cancel, addToPlaylist;
 
         public ICommand Cancel
         {
@@ -66,14 +58,15 @@ namespace ZTP_MusicPlayer.ViewModel
             }
             set { addToPlaylist = value; }
         }
-
+        #endregion
+        #region Commands(Can)Execute
         private bool AddToPlaylistCanExecute(object o)
         {
             return o != null;
         }
 
         private void AddToPlaylistExecute(object o)
-        {            
+        {
             DialogResult = true;
         }
 
@@ -87,12 +80,13 @@ namespace ZTP_MusicPlayer.ViewModel
         {
             DialogResult = false;
         }
-
+        #endregion
+        #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
-
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ZTP_MusicPlayer.Model.Iterators.PreviousTrackMemento
 {
     //ProxyPattern
     //MementoPattern
-    class Caretaker : ICaretaker
+    internal class Caretaker : ICaretaker
     {
-        private Stack<Memento> mementoStack = new Stack<Memento>();
+        private readonly Stack<Memento> mementoStack = new Stack<Memento>();
 
         public void SaveState(Originator orig)
         {
@@ -24,7 +20,7 @@ namespace ZTP_MusicPlayer.Model.Iterators.PreviousTrackMemento
         {
             orig.SetMemento(mementoStack.Pop());
         }
-        
+
         public bool IsStackEmpty()
         {
             return mementoStack.Count == 0;

@@ -1,29 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using ZTP_MusicPlayer.Command;
 using ZTP_MusicPlayer.Model;
 
 namespace ZTP_MusicPlayer.ViewModel
 {
-    class AddNewPlaylistViewModel : INotifyPropertyChanged, IDataErrorInfo
+    internal class AddNewPlaylistViewModel : INotifyPropertyChanged, IDataErrorInfo
     {
+        #region Members
+        private bool? dialogResult;
         private ICommand okCommand, cancelCommand;
         private string playlistName;
-        private bool? dialogResult;
 
+        #endregion
+        #region Properties
         public string PlaylistName
         {
             get { return playlistName; }
-            set { playlistName = value; OnPropertyChanged("PlaylistName");}
+            set
+            {
+                playlistName = value;
+                OnPropertyChanged("PlaylistName");
+            }
         }
+
         public ICommand OkCommand
         {
             get
@@ -54,17 +56,22 @@ namespace ZTP_MusicPlayer.ViewModel
         public bool? DialogResult
         {
             get { return dialogResult; }
-            set { dialogResult = value; OnPropertyChanged("DialogResult"); }
+            set
+            {
+                dialogResult = value;
+                OnPropertyChanged("DialogResult");
+            }
         }
-
+        #endregion
+        #region Commands(Can)Execute
         private bool OkCanExecute(object o)
         {
-            return String.IsNullOrEmpty(this["PlaylistName"]);
+            return string.IsNullOrEmpty(this["PlaylistName"]);
         }
 
         private void OkExecute(object o)
         {
-            MediaPlayer.Instance.CreatePlaylist(playlistName);            
+            MediaPlayer.Instance.CreatePlaylist(playlistName);
             DialogResult = true;
         }
 
@@ -77,16 +84,19 @@ namespace ZTP_MusicPlayer.ViewModel
         {
             DialogResult = false;
         }
+        #endregion
         #region PropertyChanged
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        #endregion
 
+        #endregion
         #region IDataError
+
         public string this[string columnName]
         {
             get
@@ -98,17 +108,18 @@ namespace ZTP_MusicPlayer.ViewModel
                         {
                             return "Wprowadz nazwę.";
                         }
-                        else if (!Regex.IsMatch(PlaylistName, "^[a-zA-Z0-9 _]*$"))
+                        if (!Regex.IsMatch(PlaylistName, "^[a-zA-Z0-9 _]*$"))
                         {
                             return "Nazwa może zawierać wyłącznie litery, cyfry, spację oraz twardą spację.";
                         }
-                        break;                    
+                        break;
                 }
                 return string.Empty;
             }
         }
 
         public string Error { get; }
+
         #endregion
     }
 }

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using FolderPickerLib;
 using ZTP_MusicPlayer.Command;
@@ -13,33 +9,50 @@ using ZTP_MusicPlayer.Model;
 
 namespace ZTP_MusicPlayer.ViewModel
 {
-    class CreateNewLibraryViewModel : INotifyPropertyChanged, IDataErrorInfo
+    internal class CreateNewLibraryViewModel : INotifyPropertyChanged, IDataErrorInfo
     {
+        #region Members
         private string _libName;
         private ICommand accept, cancel;
-        private TreeItem selectedUrl;
 
         private bool? dialogResult;
-
+        private TreeItem selectedUrl;
+        #endregion
+        #region Properties
         public bool? DialogResult
         {
             get { return dialogResult; }
-            set { dialogResult = value; OnPropertyChanged("DialogResult"); }
+            set
+            {
+                dialogResult = value;
+                OnPropertyChanged("DialogResult");
+            }
         }
 
 
         public string LibName
         {
             get { return _libName; }
-            set { _libName = value; OnPropertyChanged("LibName"); }
+            set
+            {
+                _libName = value;
+                OnPropertyChanged("LibName");
+            }
         }
 
-        public string SourceUrl { get { return selectedUrl.GetFullPath(); } }
+        public string SourceUrl
+        {
+            get { return selectedUrl.GetFullPath(); }
+        }
 
         public TreeItem SelectedUrl
         {
             get { return selectedUrl; }
-            set { selectedUrl = value; OnPropertyChanged("SelectedUrl"); }
+            set
+            {
+                selectedUrl = value;
+                OnPropertyChanged("SelectedUrl");
+            }
         }
 
         public ICommand Accept
@@ -48,14 +61,13 @@ namespace ZTP_MusicPlayer.ViewModel
             {
                 if (accept == null)
                 {
-                    accept = new RelayCommand(AcceptExecute,AcceptCanExecute);
+                    accept = new RelayCommand(AcceptExecute, AcceptCanExecute);
                 }
                 return accept;
             }
             set { accept = value; }
         }
 
-        
 
         public ICommand Cancel
         {
@@ -70,6 +82,8 @@ namespace ZTP_MusicPlayer.ViewModel
             set { cancel = value; }
         }
 
+        #endregion
+        #region Command(Can)Execute
         private void CancelExecute(object o)
         {
             DialogResult = false;
@@ -78,23 +92,26 @@ namespace ZTP_MusicPlayer.ViewModel
 
         private bool AcceptCanExecute(object o)
         {
-            return !String.IsNullOrWhiteSpace(LibName) && !String.IsNullOrWhiteSpace(((FolderPickerControl)o).SelectedPath);
+            return !string.IsNullOrWhiteSpace(LibName) &&
+                   !string.IsNullOrWhiteSpace(((FolderPickerControl) o).SelectedPath);
         }
 
         private void AcceptExecute(object o)
         {
-            MediaPlayer.Instance.AddLibrary(LibName, ((FolderPickerControl)o).SelectedPath);
-            
+            MediaPlayer.Instance.AddLibrary(LibName, ((FolderPickerControl) o).SelectedPath);
+
             DialogResult = true;
         }
-
+        #endregion
+        #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
+        #endregion
         #region IDataErrorInfo
+
         public string this[string columnName]
         {
             get
@@ -106,17 +123,17 @@ namespace ZTP_MusicPlayer.ViewModel
                         {
                             return "Wprowadz nazwę.";
                         }
-                        else if (!Regex.IsMatch(LibName, "^[a-zA-Z0-9 _]*$"))
+                        if (!Regex.IsMatch(LibName, "^[a-zA-Z0-9 _]*$"))
                         {
                             return "Nazwa może zawierać wyłącznie litery, cyfry, spację oraz twardą spację.";
-                        }                
-                break;
+                        }
+                        break;
                     case "SourceUrl":
                         if (string.IsNullOrWhiteSpace(SourceUrl))
                         {
                             return "Wybierz ścieżkę.";
                         }
-                        else if (!System.IO.Directory.Exists(SourceUrl))
+                        if (!Directory.Exists(SourceUrl))
                         {
                             return "Wybrany folder nie istnieje.";
                         }
@@ -127,6 +144,7 @@ namespace ZTP_MusicPlayer.ViewModel
         }
 
         public string Error { get; }
+
         #endregion
     }
 }

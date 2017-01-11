@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ZTP_MusicPlayer.Model.Iterators.PreviousTrackMemento
+﻿namespace ZTP_MusicPlayer.Model.Iterators.PreviousTrackMemento
 {
     //ProxyPattern
     //MementoPattern
-    class LastSongs : ICaretaker
+    internal class LastSongs : ICaretaker
     {
-        
-        Caretaker caretaker = new Caretaker();
+        private readonly Caretaker caretaker = new Caretaker();
+
         public bool IsStackEmpty()
         {
             return caretaker.IsStackEmpty();

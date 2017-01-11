@@ -1,58 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WMPLib;
+﻿using WMPLib;
 
 namespace ZTP_MusicPlayer.Model
 {
     public class Library
     {
-        #region Members
-        private string name;
-        private string url;
-        private IWMPPlaylist playlist;
-        #endregion
-
         #region Properties
 
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
+        public string Name { get; set; }
 
-        public string Url
-        {
-            get { return url; }
-            set { url = value; }
-        }
+        public string Url { get; set; }
 
-        public IWMPPlaylist Playlist
-        {
-            get { return playlist; }
-            set { playlist = value; }
-        }
+        public IWMPPlaylist Playlist { get; set; }
 
         #endregion
+
         #region Constructor
 
         public Library(string name, string url)
         {
-            this.name = name;
-            this.url = url;
+            Name = name;
+            Url = url;
         }
 
         public Library(string name, string url, IWMPPlaylist playlist)
         {
-            this.name = name;
-            this.url = url;
-            this.playlist = playlist;
+            Name = name;
+            Url = url;
+            Playlist = playlist;
         }
 
         #endregion
-
-
     }
 }

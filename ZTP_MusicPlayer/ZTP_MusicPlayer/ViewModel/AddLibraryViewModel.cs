@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using ZTP_MusicPlayer.Command;
 using ZTP_MusicPlayer.Model;
@@ -14,27 +8,23 @@ using ZTP_MusicPlayer.View;
 
 namespace ZTP_MusicPlayer.ViewModel
 {
-    class AddLibraryViewModel : INotifyPropertyChanged
+    internal class AddLibraryViewModel : INotifyPropertyChanged
     {
-        private MediaPlayer player = MediaPlayer.Instance;
-
-
-
+        private readonly MediaPlayer player = MediaPlayer.Instance;
         #region Members
-        private Library selectedLibrary;
+
         private ICommand addLibraryCommand;
         private ICommand removeLibraryCommand;
-        #endregion
 
+        #endregion
         #region Properties
 
-        public Library SelectedLibrary
+        public Library SelectedLibrary { get; set; }
+
+        public ObservableCollection<Library> Libraries
         {
-            get { return selectedLibrary; }
-            set { selectedLibrary = value; }
+            get { return player.Libraries; }
         }
-       
-        public ObservableCollection<Library> Libraries { get { return player.Libraries; } }
 
         public ICommand AddLibraryCommand
         {
@@ -42,14 +32,13 @@ namespace ZTP_MusicPlayer.ViewModel
             {
                 if (addLibraryCommand == null)
                 {
-                    addLibraryCommand = new RelayCommand(AddLibraryExecute, AddLibraryCanExecute);                    
+                    addLibraryCommand = new RelayCommand(AddLibraryExecute, AddLibraryCanExecute);
                 }
                 return addLibraryCommand;
             }
             set { addLibraryCommand = value; }
         }
 
-       
 
         public ICommand RemoveLibraryCommand
         {
@@ -65,31 +54,34 @@ namespace ZTP_MusicPlayer.ViewModel
         }
 
         #endregion
+        #region Commands(Can)Execute
         private bool AddLibraryCanExecute(object o)
         {
             return true;
         }
+
         private void AddLibraryExecute(object obj)
         {
-            CreateNewLibraryWindow dialog = new CreateNewLibraryWindow();
+            var dialog = new CreateNewLibraryWindow();
             dialog.ShowDialog();
         }
+
         private bool RemoveLibraryCanExecute(object o)
         {
-            return selectedLibrary != null;
+            return SelectedLibrary != null;
         }
+
         private void RemoveLibraryExecute(object obj)
         {
-            player.RemoveLibrary(selectedLibrary.Name);
-            //player.UpdateSourceTrigger("Libraries");
-            //OnPropertyChanged("Libraries");                     
+            player.RemoveLibrary(SelectedLibrary.Name);                               
         }
-
+        #endregion
+        #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
-
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion       
     }
 }

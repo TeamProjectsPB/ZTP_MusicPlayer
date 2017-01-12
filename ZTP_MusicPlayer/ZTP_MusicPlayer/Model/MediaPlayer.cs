@@ -168,6 +168,7 @@ namespace ZTP_MusicPlayer.Model
             allLibrariesPlaylistName = "allLibrariesPlaylist";
             allLibrariesPlaylist = GetPlaylistFromMediaCollection(allLibrariesPlaylistName);
             CurrentSongs = new ObservableCollection<Song>();
+//            CreateTitleToFilesWithoutMetaData();
             songChangeTimer = new DispatcherTimer();
             songChangeTimer.Interval = TimeSpan.FromMilliseconds(500);
             songChangeTimer.Tick += SongChangeTimer_Tick;
@@ -201,7 +202,7 @@ namespace ZTP_MusicPlayer.Model
         }
         #endregion
         #region MediaPlayerControls
-
+        
         public void PlayPause()
         {
             if (MPlayer.playState.Equals(WMPPlayState.wmppsPlaying))
@@ -497,7 +498,9 @@ namespace ZTP_MusicPlayer.Model
                     }
                 }
                 Libraries.Add(new Library(name, url, playlist));
+                CreateTitleToFilesWithoutMetaData();
             }
+
         }
 
         private void LoadMediaInfoFromNewLibrary(string url)
@@ -622,6 +625,28 @@ namespace ZTP_MusicPlayer.Model
         public void UpdateSourceTrigger(string propertyName)
         {
             OnPropertyChanged(propertyName);
+        }
+        #endregion
+        #region SongMetaData
+
+        private void CreateTitleToFilesWithoutMetaData()
+        {
+            foreach (Song song in CurrentSongs)
+            {
+                if (string.IsNullOrWhiteSpace(song.Tag.Title))
+                {
+                    try
+                    {
+                        var path = Path.GetFileNameWithoutExtension(song.Name);
+                        song.Tag.Title = path;
+                        song.Save();
+                    }
+                    catch (Exception e)
+                    {
+                        e.ToString();
+                    }
+                }
+            }
         }
         #endregion
     }

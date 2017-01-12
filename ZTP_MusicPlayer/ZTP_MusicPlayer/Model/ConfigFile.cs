@@ -11,7 +11,8 @@ namespace ZTP_MusicPlayer.Model
 
         static ConfigFile()
         {
-            fileUrl = Directory.GetCurrentDirectory() + "\\config.dat";
+            fileUrl = Directory.GetCurrentDirectory() + "\\configFile.dat";
+
         }
 
         public static bool ConfigFileExists()

@@ -11,7 +11,14 @@ namespace ZTP_MusicPlayer.Model.Iterators.PreviousTrackMemento
 
         public bool IsStackEmpty()
         {
-            Trace.WriteLine("Stack is empty");
+            if (caretaker.IsStackEmpty())
+            {
+                Trace.WriteLine("Stos ejst pusty");
+            }
+            else
+            {
+                Trace.WriteLine("Stos ma elementy!");
+            }
             return caretaker.IsStackEmpty();
         }
 

@@ -513,8 +513,11 @@ namespace ZTP_MusicPlayer.Model
                 if (!SongInfo.ContainsKey(x.ToLower()))
                 {
                     MPlayer.mediaCollection.add(x.ToLower());
-                    var song = Song.Create(x.ToLower());
-                    SongInfo.Add(x.ToLower(), song);
+                    if (File.Exists(x.ToLower()))
+                    {
+                        var song = Song.Create(x.ToLower());
+                        SongInfo.Add(x.ToLower(), song);
+                    }
                 }
             });
         }
@@ -560,10 +563,13 @@ namespace ZTP_MusicPlayer.Model
             for (var i = 0; i < mediaCollection.count; i++)
             {
                 var media = mediaCollection.Item[i];
-                var url = media.sourceURL;
-                var song = Song.Create(media.sourceURL);
-                EditSongNullableMetadata(song);
-                SongInfo.Add(media.sourceURL.ToLower(), song);
+                if (File.Exists(media.sourceURL))
+                {
+                    var song = Song.Create(media.sourceURL);
+                    EditSongNullableMetadata(song);
+                    SongInfo.Add(media.sourceURL.ToLower(), song);
+                }
+                
             }
         }
 
